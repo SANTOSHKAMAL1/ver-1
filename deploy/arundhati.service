@@ -1,0 +1,19 @@
+[Unit]
+Description=Arundhati Gurukulam website (FastAPI)
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/var/www/arundhati-gurukulam
+Environment="AG_SECRET=replace-with-a-long-random-string"
+Environment="AG_DB=/var/www/arundhati-gurukulam/arundhati.db"
+ExecStart=/var/www/arundhati-gurukulam/venv/bin/gunicorn backend.app:app \
+  -k uvicorn.workers.UvicornWorker \
+  -w 2 -b 127.0.0.1:8100 \
+  --access-logfile - --error-logfile -
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
