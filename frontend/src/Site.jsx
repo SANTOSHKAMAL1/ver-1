@@ -136,7 +136,7 @@ function AnimatedStat({ value }) {
 
 /* ───────────────────────── navigation ───────────────────────── */
 
-function Flyout({ group }) {
+function Flyout({ group, onNavigate }) {
   if (group.kind === "column") {
     const headings = [];
     group.links.forEach((l) => {
@@ -152,14 +152,24 @@ function Flyout({ group }) {
             <React.Fragment key={h.name}>
               {h.name && <p className="grp">{h.name}</p>}
               {h.links.map((l) => (
-                <a className="lnk" key={l.id} href={l.href}>
-                  {l.label}
+                <a
+                  className="lnk"
+                  key={l.id}
+                  href={l.href}
+                  onClick={onNavigate ? onNavigate(l.href) : undefined}
+                >
+                  <span>{l.label}</span>
+                  <span className="arr">→</span>
                 </a>
               ))}
             </React.Fragment>
           ))}
-          <a className="btn-out" href="#contact">
-            Talk to the office
+          <a
+            className="btn-out"
+            href="#contact"
+            onClick={onNavigate ? onNavigate("#contact") : undefined}
+          >
+            Talk to the office →
           </a>
         </div>
       </div>
@@ -172,14 +182,26 @@ function Flyout({ group }) {
         <div className="aside">
           <b>{group.label}</b>
           <p>{group.intro}</p>
-          <a className="more" href={group.href}>
+          <a
+            className="more"
+            href={group.href}
+            onClick={onNavigate ? onNavigate(group.href) : undefined}
+          >
             Learn more <span>→</span>
           </a>
         </div>
         <div className={`grid${group.links.length === 3 ? " one" : ""}`}>
           {group.links.map((l) => (
-            <a className="it" key={l.id} href={l.href}>
-              <b>{l.label}</b>
+            <a
+              className="it"
+              key={l.id}
+              href={l.href}
+              onClick={onNavigate ? onNavigate(l.href) : undefined}
+            >
+              <div className="it-head">
+                <b>{l.label}</b>
+                <span className="arr">→</span>
+              </div>
               <span>{l.blurb}</span>
             </a>
           ))}
@@ -223,6 +245,7 @@ function Nav({ settings, nav }) {
 
   /* keep an open flyout, and its caret, inside the viewport */
   const place = useCallback((li) => {
+    if (isMobile()) return;
     const fly = li.querySelector(".fly");
     const card = fly && fly.querySelector(".card-in");
     if (!fly || !card) return;
@@ -256,6 +279,30 @@ function Nav({ settings, nav }) {
     setOpen((v) => (v === g.id ? null : g.id));
   };
 
+  const handleNavigate = (href) => (e) => {
+    if (isMobile()) {
+      setDrawer(false);
+      setOpen(null);
+    }
+    if (href && href.startsWith("#")) {
+      e.preventDefault();
+      const targetId = href.slice(1);
+      const targetElem =
+        targetId === "top"
+          ? document.getElementById("top") || document.body
+          : document.getElementById(targetId);
+
+      setTimeout(() => {
+        if (targetElem) {
+          targetElem.scrollIntoView({ behavior: "smooth" });
+          window.history.pushState(null, "", href);
+        } else {
+          window.location.hash = href;
+        }
+      }, 90);
+    }
+  };
+
   return (
     <>
       <div className="util">
@@ -279,14 +326,16 @@ function Nav({ settings, nav }) {
             <a href={`tel:${(settings.phone || "").replace(/\s/g, "")}`} className="hide-sm">
               {settings.phone}
             </a>
-            <a href="#contact">Contact us</a>
+            <a href="#contact" onClick={handleNavigate("#contact")}>
+              Contact us
+            </a>
           </span>
         </div>
       </div>
 
       <header className="nav">
         <div className="fbar" ref={barRef}>
-          <a href="#top" className="logo">
+          <a href="#top" className="logo" onClick={handleNavigate("#top")}>
             <span className="mk">AG</span>
             <span className="wm">
               <b>{settings.school_name}</b>
@@ -295,7 +344,7 @@ function Nav({ settings, nav }) {
           </a>
 
           <button
-            className="burger"
+            className={`burger ${drawer ? "open" : ""}`.trim()}
             aria-label={drawer ? "Close menu" : "Open menu"}
             aria-expanded={drawer}
             onClick={() => setDrawer((v) => !v)}
@@ -320,14 +369,17 @@ function Nav({ settings, nav }) {
                     aria-haspopup={g.links.length ? "true" : undefined}
                     aria-expanded={g.links.length ? open === g.id : undefined}
                     onClick={(e) => {
-                      click(g)(e);
-                      if (!g.links.length) setDrawer(false);
+                      if (isMobile() && g.links.length > 0) {
+                        click(g)(e);
+                      } else {
+                        handleNavigate(g.href)(e);
+                      }
                     }}
                   >
                     {g.label}
                     {g.links.length > 0 && <i className="car" />}
                   </a>
-                  {g.links.length > 0 && <Flyout group={g} />}
+                  {g.links.length > 0 && <Flyout group={g} onNavigate={handleNavigate} />}
                 </li>
               ))}
             </ul>
