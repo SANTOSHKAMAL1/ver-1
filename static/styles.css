@@ -186,7 +186,7 @@ ul{margin:0;padding:0;list-style:none}
 /* ══════════ 1 · UTILITY BAR ══════════ */
 .util{background:#fff;border-bottom:1px solid #EFE2C6;font-size:.79rem;color:var(--maroon-dk)}
 .util .row{display:flex;align-items:center;gap:22px;min-height:42px;
-  max-width:1400px;margin:0 auto;padding-inline:clamp(14px,3vw,32px)}
+  padding-inline:clamp(14px,3vw,32px)}
 .util .bit{display:flex;align-items:center;gap:8px;white-space:nowrap}
 .util .bit svg{width:14px;height:14px;flex:none;color:var(--amber)}
 .util .sep{width:1px;height:18px;background:#EADCBE}
@@ -212,7 +212,8 @@ ul{margin:0;padding:0;list-style:none}
 
 /* ══════════ 3 · STICKY NAV ══════════ */
 header.nav{position:sticky;top:0;z-index:500;background:#fff;box-shadow:0 2px 20px rgba(67,25,10,.09)}
-.fbar{display:flex;align-items:stretch;max-width:1400px;margin:0 auto;min-height:74px;position:relative}
+.fbar{display:flex;align-items:stretch;min-height:74px;position:relative;
+  padding-right:clamp(14px,3vw,32px)}
 
 .logo{display:flex;align-items:center;gap:12px;flex:none;background:var(--maroon-dk);color:var(--cream);
   padding:12px clamp(20px,3vw,32px) 12px clamp(14px,3vw,30px);border-bottom-right-radius:34px}
@@ -298,6 +299,7 @@ body.nav-open .burger i:nth-child(3),.burger.open i:nth-child(3){transform:trans
 
 /* mobile drawer */
 @media(max-width:1080px){
+  .fbar{padding-right:0}
   .logo{border-bottom-right-radius:26px}
   .burger{display:inline-flex}
   .enq.desk{display:none}
@@ -1925,6 +1927,7 @@ footer a:hover{color:var(--gold);padding-left:4px}
 .spread{
   position:absolute;
   inset:0;
+  isolation:isolate;
   border-radius:4px 10px 10px 4px;
   overflow:hidden;
   display:flex;
@@ -1956,7 +1959,8 @@ footer a:hover{color:var(--gold);padding-left:4px}
   background:linear-gradient(90deg,rgba(59,22,8,.3),rgba(59,22,8,.06) 60%,rgba(59,22,8,0));
 }
 .spread-art,
-.spread-mark{position:relative;z-index:1}
+.spread-mark{position:relative;z-index:1;
+  opacity:clamp(0,calc((var(--open,0) - .28) * 2.6),1)}
 .spread-art{width:88%;filter:drop-shadow(0 8px 12px rgba(92,40,10,.24))}
 .spread-mark{width:52%;opacity:.9}
 
@@ -1964,6 +1968,7 @@ footer a:hover{color:var(--gold);padding-left:4px}
 .lid{
   position:absolute;
   inset:0;
+  z-index:2;
   transform-origin:left center;
   transform-style:preserve-3d;
   transform:rotateY(calc(var(--open,0) * -99deg));
