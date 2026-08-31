@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { api } from "./api";
-import { BootScreen, Lines, Mandala, Paragraphs, RocketIcon } from "./common";
+import { BootScreen, BrandLogo, Emblem, Lines, Mandala, Paragraphs, RocketIcon } from "./common";
 
 /* ───────────────────────── scroll-driven UI components ───────────────────────── */
 
@@ -224,6 +224,23 @@ function Nav({ settings, nav }) {
     return () => document.body.classList.remove("nav-open");
   }, [drawer]);
 
+  /* the mobile drawer hangs off the header, which moves as the utility bar scrolls away */
+  useEffect(() => {
+    const header = barRef.current && barRef.current.parentElement;
+    if (!header) return undefined;
+    const sync = () => {
+      const bottom = Math.round(header.getBoundingClientRect().bottom);
+      document.documentElement.style.setProperty("--nav-bottom", `${Math.max(bottom, 0)}px`);
+    };
+    sync();
+    window.addEventListener("scroll", sync, { passive: true });
+    window.addEventListener("resize", sync);
+    return () => {
+      window.removeEventListener("scroll", sync);
+      window.removeEventListener("resize", sync);
+    };
+  }, []);
+
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === "Escape") {
@@ -336,7 +353,9 @@ function Nav({ settings, nav }) {
       <header className="nav">
         <div className="fbar" ref={barRef}>
           <a href="#top" className="logo" onClick={handleNavigate("#top")}>
-            <span className="mk">AG</span>
+            <span className="mk">
+              <BrandLogo alt="" />
+            </span>
             <span className="wm">
               <b>{settings.school_name}</b>
               <i>{settings.tagline}</i>
@@ -402,35 +421,56 @@ function Hero({ s, settings }) {
       <Mandala className="medal" />
       <div className="wrap">
         <div className="hgrid">
-          <h1>
-            <Lines text={s.title} />
-          </h1>
-          <p className="lede">{s.body}</p>
-          <div className="btns">
-            {s.cta_label && (
-              <a className="btn solid" href={s.cta_href || "#admissions"}>
-                {s.cta_label}
-              </a>
+          <div className="hcopy">
+            {settings.admission_year && (
+              <span className="kicker">
+                Admissions open <em>{settings.admission_year}</em>
+              </span>
             )}
-            {s.cta2_label && (
-              <a className="btn ghost" href={s.cta2_href || "#about"}>
-                {s.cta2_label}
-              </a>
-            )}
-          </div>
-          {s.items.length > 0 && (
-            <div className="marks">
-              {s.items.map((i) => (
-                <div key={i.id}>
-                  <b>
-                    <AnimatedStat value={i.title} />
-                  </b>
-                  <span>{i.body}</span>
-                </div>
-              ))}
+            <h1>
+              <Lines text={s.title} />
+            </h1>
+            <p className="lede">{s.body}</p>
+            <div className="btns">
+              {s.cta_label && (
+                <a className="btn solid" href={s.cta_href || "#admissions"}>
+                  {s.cta_label}
+                </a>
+              )}
+              {s.cta2_label && (
+                <a className="btn ghost" href={s.cta2_href || "#about"}>
+                  {s.cta2_label}
+                </a>
+              )}
             </div>
-          )}
+          </div>
+
+          <div className="hero-art">
+            <span className="halo" aria-hidden="true" />
+            <Emblem />
+            <img
+              className="book"
+              src="/assets/img/book.webp"
+              width="1150"
+              height="702"
+              fetchpriority="high"
+              alt="Watercolour of an open book, its pages lifting away as birds"
+            />
+          </div>
         </div>
+
+        {s.items.length > 0 && (
+          <div className="marks">
+            {s.items.map((i) => (
+              <div key={i.id}>
+                <b>
+                  <AnimatedStat value={i.title} />
+                </b>
+                <span>{i.body}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
@@ -570,14 +610,29 @@ function Gold({ s }) {
           </p>
         )}
         <h2 className="head">{s.title}</h2>
-        <div className="prose-2">
-          <div>{paras[0] && <p>{paras[0]}</p>}</div>
-          <div>
-            {paras.slice(1).map((p, i) => (
-              <p key={i}>{p}</p>
-            ))}
-            {s.subtitle && <p className="pull">{s.subtitle}</p>}
+        <div className="gold-lay">
+          <div className="prose-2">
+            <div>{paras[0] && <p>{paras[0]}</p>}</div>
+            <div>
+              {paras.slice(1).map((p, i) => (
+                <p key={i}>{p}</p>
+              ))}
+              {s.subtitle && <p className="pull">{s.subtitle}</p>}
+            </div>
           </div>
+
+          <figure className="cover-card">
+            <span className="sheet">
+              <img
+                src="/assets/img/cover.jpg"
+                width="636"
+                height="900"
+                loading="lazy"
+                alt="The Gurukulam cover: Sarasvatī drawn in fine line above a watercolour open book"
+              />
+            </span>
+            <figcaption>Our cover — Sarasvatī above an open book, its pages taking wing.</figcaption>
+          </figure>
         </div>
         {s.items.length > 0 && (
           <div className="stat-strip">
@@ -940,6 +995,9 @@ function Footer({ settings, nav, onReplayIntro, onOpenContact }) {
       <div className="wrap">
         <div className="fgrid">
           <div className="fbrand">
+            <span className="flogo">
+              <BrandLogo alt="" />
+            </span>
             <b>{settings.school_name}</b>
             <i>{settings.tagline}</i>
             <p>{settings.footer_note}</p>

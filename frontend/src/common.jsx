@@ -50,6 +50,27 @@ export function Mandala({ className = "mandala", style }) {
   );
 }
 
+/**
+ * The Sarasvatī line drawing from the printed cover. Rendered as a CSS mask so a
+ * single file can be tinted per background (maroon on gold, gold on maroon).
+ */
+export function Emblem({ className = "", style }) {
+  return <span className={`emblem ${className}`.trim()} style={style} aria-hidden="true" />;
+}
+
+/** The Gurukulam mark lifted off the back cover of the same design. */
+export function BrandLogo({ className, alt = "Arundhati Gurukulam" }) {
+  return (
+    <img
+      className={className}
+      src="/assets/img/logo.webp"
+      width="520"
+      height="356"
+      alt={alt}
+    />
+  );
+}
+
 export function RocketIcon({ className = "rocket-svg", size = 20 }) {
   return (
     <svg
@@ -195,6 +216,8 @@ export function BootScreen({ name, tagline, promise, onDone }) {
     >
       <div id="intro" className={`simple-intro ${slidingUp ? "out" : ""}`}>
         <div className="intro-in">
+          <Emblem className="intro-emblem" />
+
           <div className="intro-badge">
             <span>GURUKULA PARAMPARA</span>
           </div>
