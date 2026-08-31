@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { api, token } from "./api";
-import { Mandala } from "./common";
+import { BrandLogo, Mandala } from "./common";
 
 /* ───────────────────────── small building blocks ───────────────────────── */
 
@@ -69,7 +69,9 @@ function Login({ onIn }) {
     <div className="login-page">
       <Mandala className="mandala login-mandala" />
       <form className="login-card" onSubmit={submit}>
-        <div className="seal sm">AG</div>
+        <span className="admin-seal">
+          <BrandLogo alt="" />
+        </span>
         <h1>Arundhati Gurukulam</h1>
         <p className="sub">Content management console</p>
 

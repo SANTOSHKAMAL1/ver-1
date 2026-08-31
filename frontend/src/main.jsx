@@ -3,7 +3,6 @@ import { createRoot } from "react-dom/client";
 import Site from "./Site";
 import Admin from "./Admin";
 import NotFound from "./NotFound";
-import { MandalaDefs } from "./common";
 
 function App() {
   const [currentPath, setCurrentPath] = useState(
@@ -31,12 +30,7 @@ function App() {
     content = <NotFound />;
   }
 
-  return (
-    <>
-      <MandalaDefs />
-      {content}
-    </>
-  );
+  return content;
 }
 
 createRoot(document.getElementById("root")).render(<App />);

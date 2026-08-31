@@ -83,6 +83,84 @@ function ScrollTopBtn() {
 
 
 
+/**
+ * Maps an element's travel up the viewport onto 0 → 1, so the cover can swing
+ * open as the reader scrolls it into view. Reduced motion gets it open, at rest.
+ */
+function useOpenOnScroll(ref) {
+  const [open, setOpen] = useState(0);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return undefined;
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setOpen(1);
+      return undefined;
+    }
+
+    let frame = 0;
+    const measure = () => {
+      frame = 0;
+      const r = el.getBoundingClientRect();
+      const vh = window.innerHeight || 1;
+      /* shut until its top clears the fold, fully open by the time it is a
+         third of the way up the screen */
+      const travelled = vh - r.top - r.height * 0.2;
+      setOpen(Math.min(1, Math.max(0, travelled / (vh * 0.5))));
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(measure);
+    };
+
+    measure();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [ref]);
+
+  return open;
+}
+
+/** The printed cover, hinged at its spine so it opens as the section scrolls by. */
+function OpeningCover() {
+  const ref = useRef(null);
+  const open = useOpenOnScroll(ref);
+
+  return (
+    <figure className="cover-card" ref={ref} style={{ "--open": open }}>
+      <div className="book3d">
+        <div className="spread">
+          <img
+            className="spread-art"
+            src="/assets/img/book.webp"
+            width="1150"
+            height="702"
+            loading="lazy"
+            alt=""
+          />
+          <BrandLogo className="spread-mark" alt="" />
+        </div>
+        <div className="lid">
+          <img
+            className="lid-face"
+            src="/assets/img/cover.jpg"
+            width="1000"
+            height="1415"
+            loading="lazy"
+            alt="The Gurukulam cover: Sarasvatī drawn in fine line above a watercolour open book"
+          />
+          <span className="lid-inside" aria-hidden="true" />
+        </div>
+      </div>
+      <figcaption>Our cover — Sarasvatī above an open book, its pages taking wing.</figcaption>
+    </figure>
+  );
+}
+
 function AnimatedStat({ value }) {
   const [display, setDisplay] = useState(value);
   const ref = useRef(null);
@@ -418,7 +496,7 @@ function Hero({ s, settings }) {
   return (
     <section className="hero" id={s.slug}>
       <div className="silk" />
-      <Mandala className="medal" />
+      <Mandala className="mandala medal" />
       <div className="wrap">
         <div className="hgrid">
           <div className="hcopy">
@@ -621,18 +699,7 @@ function Gold({ s }) {
             </div>
           </div>
 
-          <figure className="cover-card">
-            <span className="sheet">
-              <img
-                src="/assets/img/cover.jpg"
-                width="636"
-                height="900"
-                loading="lazy"
-                alt="The Gurukulam cover: Sarasvatī drawn in fine line above a watercolour open book"
-              />
-            </span>
-            <figcaption>Our cover — Sarasvatī above an open book, its pages taking wing.</figcaption>
-          </figure>
+          <OpeningCover />
         </div>
         {s.items.length > 0 && (
           <div className="stat-strip">

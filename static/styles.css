@@ -16,7 +16,7 @@
   --nav-bottom:74px;
   --art-book:url('/assets/img/book.webp');
   --art-emblem:url('/assets/img/saraswati.webp');
-  --art-pattern:url('/assets/img/pattern.jpg');
+  --art-mandala:url('/assets/img/mandala.webp');
 }
 *{box-sizing:border-box}
 img{max-width:100%;height:auto}
@@ -39,9 +39,12 @@ ul{margin:0;padding:0;list-style:none}
   font-size:.7rem;color:var(--sindoor);display:flex;align-items:center;gap:.7em;margin-bottom:.9em}
 .eyebrow::before{content:"";width:26px;height:1px;background:currentColor;opacity:.75}
 
-.mandala{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  width:min(100vw,1200px);max-width:100%;aspect-ratio:1;pointer-events:none;z-index:0;overflow:hidden}
-.mandala use{color:rgba(107,45,14,.10)}
+.mandala{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;
+  -webkit-mask:var(--art-mandala) center/cover no-repeat;
+          mask:var(--art-mandala) center/cover no-repeat}
+@supports ((-webkit-mask-image:url(#m)) or (mask-image:url(#m))){
+  .mandala{background-color:rgba(107,45,14,.055)}
+}
 
 /* ══════════ 0 · INTRO WELCOME PORTAL (CLEAN & SIMPLE) ══════════ */
 #boot{
@@ -213,10 +216,10 @@ header.nav{position:sticky;top:0;z-index:500;background:#fff;box-shadow:0 2px 20
 
 .logo{display:flex;align-items:center;gap:12px;flex:none;background:var(--maroon-dk);color:var(--cream);
   padding:12px clamp(20px,3vw,32px) 12px clamp(14px,3vw,30px);border-bottom-right-radius:34px}
-.logo .mk{width:56px;height:42px;border-radius:12px;background:var(--gold);color:var(--maroon-dk);
-  display:grid;place-items:center;flex:none;overflow:hidden;padding:3px 4px;
-  box-shadow:inset 0 0 0 1px rgba(107,45,14,.2),0 2px 8px rgba(0,0,0,.18)}
-.logo .mk img{width:100%;height:100%;object-fit:contain;display:block}
+.logo .mk{width:54px;height:40px;border-radius:10px;background:var(--gold);color:var(--maroon-dk);
+  display:block;flex:none;overflow:hidden;padding:0;
+  box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.logo .mk img{width:100%;height:100%;object-fit:cover;display:block}
 .logo .wm{display:flex;flex-direction:column;line-height:1.14;
   border-left:1px solid rgba(231,190,48,.5);padding-left:12px}
 .logo .wm b{font-family:var(--display);font-size:1.02rem;font-weight:700;color:#fff}
@@ -373,9 +376,6 @@ body.nav-open .scrim{opacity:1;visibility:visible}
     radial-gradient(38% 26% at 22% 30%,rgba(255,244,205,.85),transparent 62%),
     radial-gradient(30% 22% at 80% 70%,rgba(210,96,30,.35),transparent 64%),
     radial-gradient(26% 20% at 62% 18%,rgba(179,58,34,.22),transparent 66%)}
-.hero .medal{position:absolute;right:-14%;top:50%;transform:translateY(-50%);
-  width:min(74vw,720px);aspect-ratio:1;z-index:0;animation:turn 90s linear infinite}
-.hero .medal use{color:rgba(107,45,14,.13)}
 .hero .wrap{max-width:1240px}
 .hgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(26px,4vw,56px);align-items:center}
 .hcopy{max-width:880px;min-width:0}
@@ -405,7 +405,7 @@ body.nav-open .scrim{opacity:1;visibility:visible}
 
 /* ══════════ SECTIONS ══════════ */
 section{position:relative}
-.sec{padding:clamp(58px,8vw,110px) 0}
+.sec{padding:clamp(58px,8vw,110px) 0;overflow:hidden}
 .sec.tint{background:var(--cream-2)}
 .sec.on-gold{background:linear-gradient(160deg,var(--gold) 0%,var(--gold-dp) 100%);overflow:hidden}
 h2.head{font-family:var(--display);font-size:clamp(1.85rem,3.8vw,2.9rem);font-weight:600;line-height:1.2;letter-spacing:-.015em;max-width:22ch}
@@ -461,7 +461,7 @@ h2.head{font-family:var(--display);font-size:clamp(1.85rem,3.8vw,2.9rem);font-we
 
 .band{background:var(--maroon-dk);color:var(--cream);text-align:center;
   padding:clamp(56px,8vw,100px) 0;position:relative;overflow:hidden}
-.band .mandala use{color:rgba(245,211,104,.055)}
+.band .mandala{background-color:rgba(245,211,104,.045)}
 .band h2{color:var(--gold-lt);font-size:clamp(1.55rem,3.6vw,2.5rem);line-height:1.26;max-width:22ch;margin:0 auto}
 .band .lines{margin-top:24px;font-family:var(--display);font-size:clamp(1rem,2vw,1.2rem);color:#EFDCB4}
 .band .welcome{margin-top:32px;font-family:var(--accent);color:var(--gold);
@@ -503,7 +503,7 @@ h2.head{font-family:var(--display);font-size:clamp(1.85rem,3.8vw,2.9rem);font-we
 
 /* ══════════ FOOTER ══════════ */
 footer{background:var(--maroon-dk);color:#E9D8B4;padding:clamp(48px,7vw,84px) 0 0;position:relative;overflow:hidden}
-footer .mandala use{color:rgba(245,211,104,.06)}
+footer .mandala{background-color:rgba(245,211,104,.055)}
 .fgrid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:clamp(24px,4vw,48px)}
 @media(max-width:960px){.fgrid{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){.fgrid{grid-template-columns:1fr}}
@@ -526,7 +526,7 @@ footer a:hover{color:var(--gold);padding-left:4px}
 .rv.in{opacity:1;transform:none}
 @media(prefers-reduced-motion:reduce){
   .rv{opacity:1;transform:none;transition:none}
-  #intro .spin,.hero .medal,.bead i,.sk,.ticker .track{animation:none}
+  #intro .spin,.bead i,.sk,.ticker .track{animation:none}
   .intro-in .seal,.intro-in h1,.intro-in .tag,.intro-in .say,.bead{animation:none;opacity:1;transform:none}
 }
 
@@ -582,11 +582,12 @@ footer a:hover{color:var(--gold);padding-left:4px}
 .login-page{min-height:100vh;display:grid;place-items:center;position:relative;overflow:hidden;
   background:radial-gradient(120% 90% at 50% 15%,var(--gold-lt),var(--gold) 55%,var(--gold-dp))}
 .login-mandala{opacity:.9}
-.login-mandala use{color:rgba(107,45,14,.12)}
+
 .login-card{position:relative;z-index:2;width:min(410px,92vw);background:#fff;border-radius:22px;
   padding:clamp(28px,4vw,40px);box-shadow:0 34px 70px rgba(43,17,6,.28);display:grid;gap:14px}
-.login-card .seal.sm{width:60px;height:60px;font-size:1.2rem;margin:0 auto 6px;animation:none;
-  box-shadow:0 0 0 6px rgba(67,25,10,.08)}
+.login-card .admin-seal{display:block;width:92px;margin:0 auto 8px;padding:0;
+  background:var(--gold);border-radius:12px;overflow:hidden;box-shadow:0 0 0 6px rgba(67,25,10,.07)}
+.login-card .admin-seal img{width:100%;display:block}
 .login-card h1{text-align:center;font-size:1.55rem;color:var(--maroon-dk)}
 .login-card .sub{text-align:center;margin:-6px 0 8px;font-size:.82rem;letter-spacing:.14em;
   text-transform:uppercase;color:var(--sindoor);font-weight:600}
@@ -1488,9 +1489,6 @@ footer a:hover{color:var(--gold);padding-left:4px}
     width: 100%;
     overflow: hidden;
   }
-  .hero .medal {
-    display: none;
-  }
   .hero h1 {
     font-size: clamp(1.85rem, 7.5vw, 2.6rem);
     line-height: 1.16;
@@ -1823,19 +1821,12 @@ footer a:hover{color:var(--gold);padding-left:4px}
 }
 
 /* ── the star pattern, laid over the gold grounds ── */
-.hero::before,
-.sec.on-gold::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  z-index:0;
-  pointer-events:none;
-  background:var(--art-pattern) center/cover no-repeat;
-  mix-blend-mode:multiply;
-  opacity:.34;
-}
+/* on gold the figure reads the way it does in print: a shade lighter than
+   its ground, not a shadow on top of it */
 .hero .medal,
-.sec.on-gold .mandala{display:none}
+.sec.on-gold .mandala,
+#intro .mandala,
+.login-mandala{background-color:rgba(255,247,219,.22)}
 
 /* ══════════ HERO ARTWORK ══════════ */
 .hero .wrap{z-index:2}
@@ -1866,7 +1857,7 @@ footer a:hover{color:var(--gold);padding-left:4px}
   width:min(40%,188px);
   aspect-ratio:491/560;
   margin-bottom:-7%;
-  color:rgba(94,38,12,.34);
+  color:rgba(94,38,12,.46);
 }
 .hero-art .book{
   position:relative;
@@ -1909,7 +1900,8 @@ footer a:hover{color:var(--gold);padding-left:4px}
 }
 .gold-lay>.prose-2{margin-top:0}
 @media(min-width:981px){
-  .gold-lay{grid-template-columns:minmax(0,1.6fr) minmax(0,.7fr)}
+  .gold-lay{grid-template-columns:minmax(0,1.5fr) minmax(0,.86fr)}
+  .cover-card{justify-self:end;margin-right:clamp(0px,1vw,14px)}
 }
 .cover-card{
   margin:0;
@@ -1917,34 +1909,102 @@ footer a:hover{color:var(--gold);padding-left:4px}
   width:100%;
   max-width:264px;
   justify-self:center;
-  perspective:1000px;
 }
-.cover-card .sheet{
+
+/* The cover is hinged at its spine and swings open as the section scrolls past;
+   --open runs 0 → 1 from Site.jsx. Nothing here depends on it being animated —
+   at --open:0 it is simply a closed book. */
+.book3d{
   position:relative;
-  display:block;
-  border-radius:4px 12px 12px 4px;
+  aspect-ratio:1000/1415;
+  perspective:1400px;
+  perspective-origin:60% 50%;
+}
+
+/* the page under the cover */
+.spread{
+  position:absolute;
+  inset:0;
+  border-radius:4px 10px 10px 4px;
   overflow:hidden;
-  transform:rotate(-1.8deg);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  padding:18px 16px;
+  background:
+    radial-gradient(120% 90% at 50% 30%,#FFF6DC 0%,#FBE6A6 55%,#F3D480 100%);
+  box-shadow:0 20px 40px rgba(60,24,4,.3),0 2px 6px rgba(60,24,4,.22);
+}
+.spread::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  -webkit-mask:var(--art-mandala) center/contain no-repeat;
+          mask:var(--art-mandala) center/contain no-repeat;
+}
+@supports ((-webkit-mask-image:url(#m)) or (mask-image:url(#m))){
+  .spread::before{background-color:rgba(203,91,27,.14)}
+}
+/* the gutter, so it reads as the inside of a book */
+.spread::after{
+  content:"";
+  position:absolute;
+  inset:0 auto 0 0;
+  width:14px;
+  background:linear-gradient(90deg,rgba(59,22,8,.3),rgba(59,22,8,.06) 60%,rgba(59,22,8,0));
+}
+.spread-art,
+.spread-mark{position:relative;z-index:1}
+.spread-art{width:88%;filter:drop-shadow(0 8px 12px rgba(92,40,10,.24))}
+.spread-mark{width:52%;opacity:.9}
+
+/* the front board */
+.lid{
+  position:absolute;
+  inset:0;
+  transform-origin:left center;
+  transform-style:preserve-3d;
+  transform:rotateY(calc(var(--open,0) * -99deg));
+  will-change:transform;
+}
+.lid-face,
+.lid-inside{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  border-radius:4px 10px 10px 4px;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+}
+.lid-face{
+  object-fit:cover;
   box-shadow:0 24px 46px rgba(60,24,4,.34),0 2px 6px rgba(60,24,4,.24);
-  transition:transform .55s cubic-bezier(.16,1,.3,1),box-shadow .55s ease;
 }
-.cover-card:hover .sheet{
-  transform:rotate(0deg) translateY(-7px) scale(1.015);
-  box-shadow:0 32px 60px rgba(60,24,4,.4),0 3px 8px rgba(60,24,4,.28);
+/* the inside face of the board, seen once it is more than half open */
+.lid-inside{
+  transform:rotateY(180deg);
+  background:linear-gradient(120deg,#F7DA7B,#E5B826 60%,#D4A114);
+  box-shadow:inset 0 0 0 1px rgba(107,45,14,.22);
 }
-.cover-card .sheet img{width:100%;display:block}
 /* the spine, and the sheen of a printed board */
-.cover-card .sheet::before{
+.lid::before{
   content:"";
   position:absolute;
   inset:0 auto 0 0;
   width:9px;
+  z-index:2;
   background:linear-gradient(90deg,rgba(59,22,8,.42),rgba(59,22,8,.12) 55%,rgba(59,22,8,0));
+  pointer-events:none;
 }
-.cover-card .sheet::after{
+.lid::after{
   content:"";
   position:absolute;
   inset:0;
+  z-index:2;
+  border-radius:4px 10px 10px 4px;
   background:linear-gradient(115deg,rgba(255,255,255,.34) 0%,rgba(255,255,255,0) 38%);
   pointer-events:none;
 }
@@ -1957,7 +2017,9 @@ footer a:hover{color:var(--gold);padding-left:4px}
   opacity:.82;
 }
 @media(max-width:980px){
-  .cover-card{max-width:270px}
+  .cover-card{max-width:240px}
+  /* a narrower column means less room for the board to swing into */
+  .lid{transform:rotateY(calc(var(--open,0) * -94deg))}
 }
 
 /* ══════════ EMBLEM WATERMARK ON THE DARK BAND ══════════ */
@@ -2013,11 +2075,6 @@ footer a:hover{color:var(--gold);padding-left:4px}
   overflow:auto;
   align-content:center;
   padding:clamp(16px,4vh,40px) 0;
-  background-image:
-    radial-gradient(100% 80% at 50% 30%,#FDF4D4 0%,rgba(248,227,158,.94) 50%,rgba(239,210,123,.96) 100%),
-    var(--art-pattern);
-  background-size:cover,cover;
-  background-position:center,center;
 }
 @media(max-height:620px){
   .intro-emblem{display:none}
@@ -2041,5 +2098,6 @@ footer a:hover{color:var(--gold);padding-left:4px}
 /* ══════════ PICTURE-SIDE POLISH ══════════ */
 @media(prefers-reduced-motion:reduce){
   .hero-art .book{animation:none}
-  .cover-card .sheet{transition:none}
+  /* Site.jsx pins --open to 1 here, so the book simply sits open */
+  .lid{transition:none}
 }
