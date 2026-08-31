@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { api } from "./api";
-import { BootScreen, Lines, Mandala, Paragraphs, RocketIcon } from "./common";
+import { BootScreen, BrandLogo, Emblem, Lines, Mandala, Paragraphs, RocketIcon } from "./common";
 
 /* ───────────────────────── scroll-driven UI components ───────────────────────── */
 
@@ -82,6 +82,84 @@ function ScrollTopBtn() {
 }
 
 
+
+/**
+ * Maps an element's travel up the viewport onto 0 → 1, so the cover can swing
+ * open as the reader scrolls it into view. Reduced motion gets it open, at rest.
+ */
+function useOpenOnScroll(ref) {
+  const [open, setOpen] = useState(0);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return undefined;
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setOpen(1);
+      return undefined;
+    }
+
+    let frame = 0;
+    const measure = () => {
+      frame = 0;
+      const r = el.getBoundingClientRect();
+      const vh = window.innerHeight || 1;
+      /* shut until its top clears the fold, fully open by the time it is a
+         third of the way up the screen */
+      const travelled = vh - r.top - r.height * 0.2;
+      setOpen(Math.min(1, Math.max(0, travelled / (vh * 0.5))));
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(measure);
+    };
+
+    measure();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [ref]);
+
+  return open;
+}
+
+/** The printed cover, hinged at its spine so it opens as the section scrolls by. */
+function OpeningCover() {
+  const ref = useRef(null);
+  const open = useOpenOnScroll(ref);
+
+  return (
+    <figure className="cover-card" ref={ref} style={{ "--open": open }}>
+      <div className="book3d">
+        <div className="spread">
+          <img
+            className="spread-art"
+            src="/assets/img/book.webp"
+            width="1150"
+            height="702"
+            loading="lazy"
+            alt=""
+          />
+          <BrandLogo className="spread-mark" alt="" />
+        </div>
+        <div className="lid">
+          <img
+            className="lid-face"
+            src="/assets/img/cover.jpg"
+            width="1000"
+            height="1415"
+            loading="lazy"
+            alt="The Gurukulam cover: Sarasvatī drawn in fine line above a watercolour open book"
+          />
+          <span className="lid-inside" aria-hidden="true" />
+        </div>
+      </div>
+      <figcaption>Our cover — Sarasvatī above an open book, its pages taking wing.</figcaption>
+    </figure>
+  );
+}
 
 function AnimatedStat({ value }) {
   const [display, setDisplay] = useState(value);
@@ -224,6 +302,23 @@ function Nav({ settings, nav }) {
     return () => document.body.classList.remove("nav-open");
   }, [drawer]);
 
+  /* the mobile drawer hangs off the header, which moves as the utility bar scrolls away */
+  useEffect(() => {
+    const header = barRef.current && barRef.current.parentElement;
+    if (!header) return undefined;
+    const sync = () => {
+      const bottom = Math.round(header.getBoundingClientRect().bottom);
+      document.documentElement.style.setProperty("--nav-bottom", `${Math.max(bottom, 0)}px`);
+    };
+    sync();
+    window.addEventListener("scroll", sync, { passive: true });
+    window.addEventListener("resize", sync);
+    return () => {
+      window.removeEventListener("scroll", sync);
+      window.removeEventListener("resize", sync);
+    };
+  }, []);
+
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === "Escape") {
@@ -336,7 +431,9 @@ function Nav({ settings, nav }) {
       <header className="nav">
         <div className="fbar" ref={barRef}>
           <a href="#top" className="logo" onClick={handleNavigate("#top")}>
-            <span className="mk">AG</span>
+            <span className="mk">
+              <BrandLogo alt="" />
+            </span>
             <span className="wm">
               <b>{settings.school_name}</b>
               <i>{settings.tagline}</i>
@@ -399,38 +496,59 @@ function Hero({ s, settings }) {
   return (
     <section className="hero" id={s.slug}>
       <div className="silk" />
-      <Mandala className="medal" />
+      <Mandala className="mandala medal" />
       <div className="wrap">
         <div className="hgrid">
-          <h1>
-            <Lines text={s.title} />
-          </h1>
-          <p className="lede">{s.body}</p>
-          <div className="btns">
-            {s.cta_label && (
-              <a className="btn solid" href={s.cta_href || "#admissions"}>
-                {s.cta_label}
-              </a>
+          <div className="hcopy">
+            {settings.admission_year && (
+              <span className="kicker">
+                Admissions open <em>{settings.admission_year}</em>
+              </span>
             )}
-            {s.cta2_label && (
-              <a className="btn ghost" href={s.cta2_href || "#about"}>
-                {s.cta2_label}
-              </a>
-            )}
-          </div>
-          {s.items.length > 0 && (
-            <div className="marks">
-              {s.items.map((i) => (
-                <div key={i.id}>
-                  <b>
-                    <AnimatedStat value={i.title} />
-                  </b>
-                  <span>{i.body}</span>
-                </div>
-              ))}
+            <h1>
+              <Lines text={s.title} />
+            </h1>
+            <p className="lede">{s.body}</p>
+            <div className="btns">
+              {s.cta_label && (
+                <a className="btn solid" href={s.cta_href || "#admissions"}>
+                  {s.cta_label}
+                </a>
+              )}
+              {s.cta2_label && (
+                <a className="btn ghost" href={s.cta2_href || "#about"}>
+                  {s.cta2_label}
+                </a>
+              )}
             </div>
-          )}
+          </div>
+
+          <div className="hero-art">
+            <span className="halo" aria-hidden="true" />
+            <Emblem />
+            <img
+              className="book"
+              src="/assets/img/book.webp"
+              width="1150"
+              height="702"
+              fetchpriority="high"
+              alt="Watercolour of an open book, its pages lifting away as birds"
+            />
+          </div>
         </div>
+
+        {s.items.length > 0 && (
+          <div className="marks">
+            {s.items.map((i) => (
+              <div key={i.id}>
+                <b>
+                  <AnimatedStat value={i.title} />
+                </b>
+                <span>{i.body}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
@@ -570,14 +688,18 @@ function Gold({ s }) {
           </p>
         )}
         <h2 className="head">{s.title}</h2>
-        <div className="prose-2">
-          <div>{paras[0] && <p>{paras[0]}</p>}</div>
-          <div>
-            {paras.slice(1).map((p, i) => (
-              <p key={i}>{p}</p>
-            ))}
-            {s.subtitle && <p className="pull">{s.subtitle}</p>}
+        <div className="gold-lay">
+          <div className="prose-2">
+            <div>{paras[0] && <p>{paras[0]}</p>}</div>
+            <div>
+              {paras.slice(1).map((p, i) => (
+                <p key={i}>{p}</p>
+              ))}
+              {s.subtitle && <p className="pull">{s.subtitle}</p>}
+            </div>
           </div>
+
+          <OpeningCover />
         </div>
         {s.items.length > 0 && (
           <div className="stat-strip">
@@ -940,6 +1062,9 @@ function Footer({ settings, nav, onReplayIntro, onOpenContact }) {
       <div className="wrap">
         <div className="fgrid">
           <div className="fbrand">
+            <span className="flogo">
+              <BrandLogo alt="" />
+            </span>
             <b>{settings.school_name}</b>
             <i>{settings.tagline}</i>
             <p>{settings.footer_note}</p>

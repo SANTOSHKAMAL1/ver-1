@@ -1,52 +1,32 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-/** The eight-fold petal figure printed on the school's notebook covers. */
-export function MandalaDefs() {
-  const petals = useMemo(() => {
-    const out = [];
-    for (let k = 0; k < 16; k++) {
-      const rot = k * 22.5;
-      out.push(
-        <path
-          key={`a${k}`}
-          transform={`rotate(${rot} 200 200)`}
-          opacity={k % 2 ? 0.45 : 0.8}
-          d="M200 24 C232 84 246 128 246 168 C246 206 226 232 200 232 C174 232 154 206 154 168 C154 128 168 84 200 24z"
-        />
-      );
-      out.push(
-        <path
-          key={`b${k}`}
-          transform={`rotate(${rot + 11.25} 200 200)`}
-          opacity={0.35}
-          d="M200 96 C218 132 226 152 226 172 C226 192 214 204 200 204 C186 204 174 192 174 172 C174 152 182 132 200 96z"
-        />
-      );
-    }
-    return out;
-  }, []);
-
-  return (
-    <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
-      <symbol id="mandala" viewBox="0 0 400 400">
-        <g fill="currentColor">{petals}</g>
-        <g fill="none" stroke="currentColor" strokeWidth="1.4">
-          <circle cx="200" cy="200" r="42" opacity="0.6" />
-          <circle cx="200" cy="200" r="58" />
-          <circle cx="200" cy="200" r="105" opacity="0.5" strokeDasharray="3 4" />
-          <circle cx="200" cy="200" r="150" />
-          <circle cx="200" cy="200" r="186" />
-        </g>
-      </symbol>
-    </svg>
-  );
+/**
+ * The mandala printed on the school's covers. It is drawn as a CSS mask
+ * (static/assets/img/mandala.webp, lifted off the printed ground) so every
+ * mandala on the site is the same figure, tinted to suit whatever it sits on.
+ */
+export function Mandala({ className = "mandala", style }) {
+  return <span className={className} style={style} aria-hidden="true" />;
 }
 
-export function Mandala({ className = "mandala", style }) {
+/**
+ * The Sarasvatī line drawing from the printed cover. Rendered as a CSS mask so a
+ * single file can be tinted per background (maroon on gold, gold on maroon).
+ */
+export function Emblem({ className = "", style }) {
+  return <span className={`emblem ${className}`.trim()} style={style} aria-hidden="true" />;
+}
+
+/** The Gurukulam mark lifted off the back cover of the same design. */
+export function BrandLogo({ className, alt = "Arundhati Gurukulam" }) {
   return (
-    <svg className={className} style={style} aria-hidden="true">
-      <use href="#mandala" />
-    </svg>
+    <img
+      className={className}
+      src="/assets/img/logo.webp"
+      width="520"
+      height="356"
+      alt={alt}
+    />
   );
 }
 
@@ -194,7 +174,11 @@ export function BootScreen({ name, tagline, promise, onDone }) {
       aria-label="Click anywhere to enter site"
     >
       <div id="intro" className={`simple-intro ${slidingUp ? "out" : ""}`}>
+        <Mandala />
+
         <div className="intro-in">
+          <Emblem className="intro-emblem" />
+
           <div className="intro-badge">
             <span>GURUKULA PARAMPARA</span>
           </div>
